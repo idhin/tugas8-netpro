@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+
+  db:
+    container_name: employee_db
+    image: postgres
+    hostname: db
+    environment:
+      GET_HOST_FROM: dns
+      POSTGRES_DB: dev
+      POSTGRES_USER: postgres-dev
+    ports:
+      - 5432:5432
+    networks:
+      - tugas8net
+
+  tugas8:
+    container_name: tugas8
+    image: cidam77/tugas8:v1
+    hostname: tugas8
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      GET_HOSTS_FROM: dns
+    networks:
+    - tugas8net
+    volumes:
+    - .:/go/src/TUGAS8
+    ports:
+    - 8080:8080
+    depends_on:
+    - db
+    links:
+    - db
+    labels:
+      kompose.service.type: LoadBalancer
+
+networks:
+  tugas8net:
+    driver: bridge
